@@ -1,0 +1,13 @@
+<sly data-sly-use.clientlib="core/wcm/components/commons/v1/templates/clientlib.html">
+    <sly data-sly-call="${clientlib.js @ categories='mysite.servletComponent'}"/>
+</sly>
+
+<div class="my-resource" data-current-resource="${resource.path}"></div>
+<div>
+    <h1 class="header">${properties.header}</h1>
+    <h2 class="title">${properties.title}</h2>
+    <br>
+    <button id="approveButtonLabel" type="button" onclick="myFunction('approve')" >${properties.approveButtonLabel}</button>
+    <br>
+    <button id="rejectButtonLabel" type="button" onclick="myFunction('reject')" >${properties.rejectButtonLabel}</button>
+</div>
