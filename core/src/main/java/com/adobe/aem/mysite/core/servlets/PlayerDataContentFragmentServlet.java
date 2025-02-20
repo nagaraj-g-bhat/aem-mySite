@@ -28,7 +28,6 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
@@ -84,14 +83,19 @@ public class PlayerDataContentFragmentServlet extends SlingSafeMethodsServlet {
             SearchResult result = query.getResult();
             List<Hit> hits = result.getHits();
             for(Hit hit : hits){
-                String path = hit.getPath();
-                Resource hitData = hit.getResource().getChild("jcr:content/data/master");
-
-
-                //ValueMap valueMap = Objects.requireNonNull(hitData).getValueMap();
-                //JsonObject pageObject = new JsonObject();
-                //pageObject.addProperty("path", hit.getPath());
-                //resultArray.add(pageObject);
+                Resource hitResource = hit.getResource().getChild("jcr:content/data/master");
+                JsonObject dataObject = new JsonObject();
+                JsonObject jsonObject = new JsonObject();
+                if(hitResource != null){
+                    hitResource.getValueMap().forEach((key,value) -> {
+                        if(!key.contains("@LastModified") && !key.contains("@LastModifiedBy") && !key.contains("jcr:")){
+                           JsonElement jsonElement = GSON.toJsonTree(value);
+                           jsonObject.add(key,jsonElement);
+                        }
+                    });
+                    dataObject.add("data",jsonObject);
+                }
+                resultArray.add(dataObject);
             }
             response.setContentType("application/json");
             response.getWriter().write(resultArray.toString());
